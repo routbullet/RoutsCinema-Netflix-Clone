@@ -1,60 +1,142 @@
-# RoutsCinema — Netflix-style TMDB Browser
+# RoutsCinema — Netflix-Style Movie & TV Browser
 
-Portfolio-grade Netflix clone powered by **TMDB REST APIs**. Cinematic hero billboard, genre rails, details + trailer modal, search, and My List.
+A cinematic Netflix-style browsing experience for movies and TV shows, powered by the
+[TMDB REST API](https://developers.themoviedb.org/3). Featured hero billboard, 15 genre
+rails, details with trailers, live search, and a persistent My List.
 
-![Stack](https://img.shields.io/badge/Vite-5-646CFF) ![React](https://img.shields.io/badge/React-18-61DAFB) ![TMDB](https://img.shields.io/badge/TMDB-REST-01B4E4)
+![Vite](https://img.shields.io/badge/Vite-5-646CFF)
+![React](https://img.shields.io/badge/React-18-61DAFB)
+![React Router](https://img.shields.io/badge/React_Router-6-CA4245)
+![TMDB](https://img.shields.io/badge/TMDB-REST_API-01B4E4)
+![License](https://img.shields.io/badge/License-MIT-green)
 
-## Quick start
+## Features
+
+- **Hero billboard** — a random trending title is spotlighted on every page load, with
+  backdrop art, rating, metadata, overview, Play / More Info / My List actions.
+- **15 content rails** — Trending Now, Top Rated, Upcoming, TV Shows, Sci-Fi, Animation,
+  Action, Mystery, Horror, Romance, Comedy, Family, Crime, Thriller, Documentary.
+- **Details modal & pages** — overview, genres, cast, rating, and YouTube trailer embeds.
+- **Live search** — debounced multi-search across movies and TV shows, synced to the URL.
+- **My List** — save titles to a watchlist persisted in `localStorage`.
+- **Resilient data layer** — request throttling, in-memory caching, silent background
+  retries with skeleton screens, and friendly error / empty states with manual retry.
+- **Accessible (WCAG 2.2 AA)** — landmarks, skip link, keyboard-navigable carousels,
+  focus-trapped modal, visible focus rings, 44px touch targets, `prefers-reduced-motion`.
+- **SEO ready** — per-route titles, meta descriptions, canonical URLs, Open Graph /
+  Twitter cards, JSON-LD structured data, `robots.txt`, and `sitemap.xml`.
+- **Responsive** — mobile-first layout from 360px phones to 1440px desktops with
+  swipeable snap-scroll rails.
+
+## Tech Stack
+
+| Layer          | Choice                                                         |
+| -------------- | -------------------------------------------------------------- |
+| Build          | Vite 5                                                         |
+| UI             | React 18, styled-components 6, framer-motion 11, react-icons 5 |
+| Routing        | react-router-dom 6                                             |
+| SEO            | react-helmet-async 2                                           |
+| Data           | axios 1.x against TMDB REST API                                |
+| Testing / Lint | Vitest + Testing Library, ESLint                               |
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js 18+ and npm
+- A free TMDB API key from https://www.themoviedb.org/settings/api
+
+### Setup
 
 ```bash
-cp .env.example .env   # add VITE_TMDB_KEY from https://www.themoviedb.org/settings/api
+# 1. Clone and install
+git clone <your-repo-url>
+cd RoutsCinema--Netflix-Clone
 npm install
-npm run dev            # http://localhost:3000 with /api/tmdb proxy
+
+# 2. Configure your TMDB key (pick one file)
+cp .env.example .env.local
+# then edit .env.local and set VITE_TMDB_KEY=your_key_here
+
+# 3. Start the dev server (restarts are required after env changes)
+npm run dev   # http://localhost:3000
 ```
 
-> The old key `b9605fd8…` was exposed in git history — **rotate it** in TMDB dashboard before deploying.
+> `.env*` files are gitignored and never committed. If a key was ever committed to
+> git history, rotate it in the TMDB dashboard and replace it locally.
 
-## Scripts
+## Available Scripts
 
-| Command | What |
-|---|---|
-| `npm run dev` | Vite dev + TMDB proxy |
-| `npm run build` | Production build to `dist/` |
-| `npm run preview` | Preview prod build |
-| `npm run lint` | ESLint (must be clean) |
-| `npm test` | Vitest (must pass) |
+| Command              | Description                           |
+| -------------------- | ------------------------------------- |
+| `npm run dev`        | Start Vite dev server with TMDB proxy |
+| `npm run build`      | Production build into `dist/`         |
+| `npm run preview`    | Preview the production build          |
+| `npm run lint`       | Run ESLint (zero warnings)            |
+| `npm test`           | Run the Vitest suite once             |
+| `npm run test:watch` | Run Vitest in watch mode              |
 
-## Governance
+## Project Structure
 
-* Read **`AGENTS.md`** before any change.
-* UI/UX/a11y/SEO/perf/security decisions: load **`.opencode/skills/super-senior-frontend/SKILL.md`** first.
-* Checklists: `references/tmdb-endpoints.md`, `references/a11y-seo-checklist.md`.
-
-## TMDB
-
-* Central client `src/lib/tmdb.js` (axios 1.x, 10s timeout, AbortController, typed missing-key/401/404/429/502-reset errors; missing key short-circuits with no network call). No ad-hoc fetches.
-* Concurrency: max 4 simultaneous upstream requests with one backoff retry on reset/429 (never for search). Home mounts the first 5 rails eagerly; the rest lazy-mount via `IntersectionObserver`.
-* Dev proxy: `/api/tmdb` with 10s timeouts + 502 JSON on upstream reset (see `vite.config.js`). Debug upstream traffic with `DEBUG=tmdb npm run dev`.
-* Images `src/lib/image.js`: `w342` posters, `w780` backdrops, `w1280` hero only. Lazy + async decode, aspect-ratio boxes (no CLS).
-* Rails `src/lib/requests.js`: trending, top_rated, upcoming, Netflix TV (`with_networks=213`), 11 genre discovers.
+```
+├── index.html              # App shell: SEO meta, OG/Twitter tags, fonts, preconnects
+├── vite.config.js          # Dev server + /api/tmdb proxy with timeouts and error handling
+├── vercel.json / netlify.toml  # SPA fallback + security headers for deploy
+├── public/                 # favicon, manifest.json, robots.txt, sitemap.xml
+└── src/
+    ├── main.jsx            # React entry point
+    ├── App.jsx             # Router, providers, global layout
+    ├── lib/
+    │   ├── tmdb.js         # Central axios client: key injection, timeouts, typed errors
+    │   ├── image.js        # Sized TMDB image URL helpers (w342 / w500 / w780 / w1280)
+    │   └── requests.js     # Endpoint map + the 15 home-page rails
+    ├── hooks/
+    │   ├── useTmdb.js      # Cached, throttled fetching with silent retries + abort
+    │   └── useMyList.js    # localStorage-backed watchlist with toast feedback
+    ├── styles/             # Design tokens + global styles
+    ├── components/         # Navbar, Hero, Row, TitleCard, DetailsModal, Footer, …
+    ├── pages/              # Home, SearchPage, MyListPage, DetailsPage, NotFound
+    └── test/               # Vitest suites
+```
 
 ## Routes
 
-* `/` — hero + 15 rails + modal
-* `/title/:type/:id` — details + YouTube-nocookie trailer + cast + JSON-LD
-* `/search?q=` — debounced multi-search, abort stale
-* `/mylist` — localStorage `routs:mylist:v1`
+| Route              | View                                                                |
+| ------------------ | ------------------------------------------------------------------- |
+| `/`                | Hero billboard + all genre rails + details modal                    |
+| `/title/:type/:id` | Full details page with trailer and cast (`type` is `movie` or `tv`) |
+| `/search?q=`       | Live search results grid                                            |
+| `/mylist`          | Saved watchlist                                                     |
+| `*`                | 404 page                                                            |
 
-## Quality bar
+## How It Works
 
-* Beautiful UI: tokens in `src/styles/tokens.js`, Bebas Neue + Inter, Netflix red `#E50914` on `#0B0A18`.
-* Best UX: 3-click trailer, focus-return modal, toasts, skeletons, retry/empty states.
-* A11y WCAG 2.2 AA: landmarks, skip link, keyboard carousels, `alt="{title} ({year}) poster"`, 44px targets, reduced-motion.
-* SEO: `react-helmet-async` titles/descriptions/canonical/OG/Twitter/JSON-LD, `robots.txt`, `sitemap.xml`, semantic HTML.
-* Optimized: code-split routes, `React.memo`, 5-min cache + dedupe, preconnect image CDN. Budgets: Lighthouse ≥90, LCP <2.5s, CLS <0.1.
-* Secure: no keys in repo, `.env` ignored, CSP headers (`vercel.json`/`netlify.toml`), axios timeout+abort, `npm audit` clean.
-* Responsive mobile-first: 360 / 768 / 1280 / 1440, scroll-snap rails, `clamp()` hero.
+- **Dev proxy** — the browser calls same-origin `/api/tmdb/...` and Vite forwards to
+  `https://api.themoviedb.org/3`, so the API key stays out of client-side URLs in
+  development. Run with `DEBUG=tmdb npm run dev` to log proxied upstream requests.
+- **Respectful fetching** — at most 4 simultaneous TMDB requests, 5-minute in-memory
+  cache with in-flight deduplication, and above-the-fold rails load first while the rest
+  mount on scroll via `IntersectionObserver`.
+- **Silent recovery** — transient failures (reset connections, rate limits, slow
+  responses) are retried automatically with backoff; the UI only shows an error with a
+  Retry button after retries are exhausted. Aborted requests never surface as errors.
+- **Right-sized images** — `w342` posters in rails (`w500` retina srcset), `w780`
+  backdrops, `w1280` hero only; lazy-loaded below the fold with aspect-ratio boxes to
+  avoid layout shift.
 
-## Deploy
+## Deployment
 
-Vercel (recommended) or Netlify. Set `VITE_TMDB_KEY` in dashboard. SPA fallback + security headers already in `vercel.json` / `netlify.toml`.
+Vercel or Netlify — both configs are included (SPA fallback + security headers).
+
+1. Push the repo and import it in the Vercel / Netlify dashboard.
+2. Set the environment variable `VITE_TMDB_KEY` to your TMDB key.
+3. Deploy — the build command is `npm run build`, output directory `dist/`.
+
+## Attribution
+
+Data and images by [TMDB](https://www.themoviedb.org/). This product uses the TMDB API
+but is not endorsed or certified by TMDB.
+
+## License
+
+MIT — see `LICENSE` for details.
