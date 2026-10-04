@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>RoutsCinema — Trending Movies & TV Shows | Netflix-style TMDB Browser</title>
+    <meta
+      name="description"
+      content="RoutsCinema is a cinematic Netflix-style browser for trending movies and TV shows, powered by TMDB. Watch trailers, browse genre rails, search titles and save My List."
+    />
+    <meta name="robots" content="index,follow" />
+    <meta name="theme-color" content="#0B0A18" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="canonical" href="https://routscinema.example.com/" />
+
+    <!-- Performance: preconnect to fonts + TMDB image CDN -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://image.tmdb.org" crossorigin />
+
+    <!-- Typography: Bebas Neue (display) + Inter (body) -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Open Graph / Twitter (default; per-route Helmet overrides) -->
+    <meta property="og:site_name" content="RoutsCinema" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="RoutsCinema — Trending Movies & TV Shows" />
+    <meta
+      property="og:description"
+      content="Browse trending movies, top-rated films and TV shows with trailers, ratings and My List. Powered by TMDB."
+    />
+    <meta property="og:image" content="https://image.tmdb.org/t/p/w780/wwemzKWzjKYJFfCeiB57q3r4Bcm.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="RoutsCinema — Trending Movies & TV Shows" />
+    <meta
+      name="twitter:description"
+      content="Cinematic Netflix-style discovery for movies & TV, powered by TMDB REST APIs."
+    />
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run RoutsCinema.</noscript>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
